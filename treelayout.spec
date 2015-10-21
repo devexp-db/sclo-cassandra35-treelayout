@@ -1,26 +1,16 @@
 %global core org.abego.treelayout
 Name:          treelayout
 Version:       1.0.2
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Efficient and customizable Tree Layout Algorithm in Java
 License:       BSD
 URL:           http://treelayout.sourceforge.net/
-# svn export svn://svn.code.sf.net/p/treelayout/code/tags/REL-1.0.2 treelayout-1.0.2
-# tar cJf treelayout-1.0.2.tar.xz treelayout-1.0.2
-Source0:       %{name}-%{version}.tar.xz
+Source0:       https://github.com/abego/treelayout/archive/v%{version}.tar.gz
 Source1:       %{name}-project-pom.xml
 
 BuildRequires: maven-local
 BuildRequires: mvn(junit:junit)
-%if 0
-# Not available
-BuildRequires: mvn(org.netbeans.api:org-netbeans-api-visual:RELEASE67)
-%endif
-%if %{?fedora} > 20
 BuildRequires: mvn(org.sonatype.oss:oss-parent:pom:)
-%else
-BuildRequires: mvn(org.sonatype.oss:oss-parent)
-%endif
 
 BuildArch:     noarch
 
@@ -47,7 +37,7 @@ This package contains javadoc for %{name}.
 
 cp -p %{SOURCE1} pom.xml
 sed -i "s|@VERSION@|%{version}|" pom.xml
-# build core and demo ... for now
+# Use org.netbeans.api:org-netbeans-api-visual:RELEASE67
 %pom_disable_module %{core}.netbeans
 %pom_disable_module %{core}.netbeans.demo
 
@@ -67,7 +57,6 @@ native2ascii -encoding UTF8 %{core}/src/main/java/org/abego/treelayout/package-i
 %mvn_install
 
 %files -f .mfiles-%{core}.core
-%dir %{_javadir}/%{name}
 %doc CHANGES.txt
 %license LICENSE.TXT
 
@@ -79,6 +68,10 @@ native2ascii -encoding UTF8 %{core}/src/main/java/org/abego/treelayout/package-i
 %license LICENSE.TXT
 
 %changelog
+* Wed Oct 21 2015 gil cattaneo <puntogil@libero.it> 1.0.2-3
+- use upstream source archive
+- remove duplicate file
+
 * Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
