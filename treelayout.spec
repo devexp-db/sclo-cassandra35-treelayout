@@ -1,15 +1,15 @@
 %global core org.abego.treelayout
 Name:          treelayout
-Version:       1.0.2
-Release:       3%{?dist}
+Version:       1.0.3
+Release:       1%{?dist}
 Summary:       Efficient and customizable Tree Layout Algorithm in Java
 License:       BSD
 URL:           http://treelayout.sourceforge.net/
 Source0:       https://github.com/abego/treelayout/archive/v%{version}.tar.gz
-Source1:       %{name}-project-pom.xml
 
 BuildRequires: maven-local
 BuildRequires: mvn(junit:junit)
+BuildRequires: mvn(org.apache.felix:maven-bundle-plugin)
 BuildRequires: mvn(org.sonatype.oss:oss-parent:pom:)
 
 BuildArch:     noarch
@@ -35,15 +35,32 @@ This package contains javadoc for %{name}.
 %prep
 %setup -q -n %{name}-%{version}
 
-cp -p %{SOURCE1} pom.xml
-sed -i "s|@VERSION@|%{version}|" pom.xml
-# Use org.netbeans.api:org-netbeans-api-visual:RELEASE67
-%pom_disable_module %{core}.netbeans
-%pom_disable_module %{core}.netbeans.demo
+# This is a dummy POM added just to ease building in the RPM platforms:
+cat > pom.xml << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-cp -p %{core}/CHANGES.txt .
-cp -p %{core}/src/LICENSE.TXT .
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.abego.treelayout</groupId>
+  <artifactId>org.abego.treelayout.project</artifactId>
+  <packaging>pom</packaging>
+  <version>%{version}</version>
 
+  <modules>
+    <module>org.abego.treelayout</module>
+    <module>org.abego.treelayout.demo</module>
+    <!-- Use org.netbeans.api:org-netbeans-api-visual:RELEASE67: -->
+    <!--module>org.abego.treelayout.netbeans</module-->
+    <!--module>org.abego.treelayout.netbeans.demo</module-->
+  </modules>
+
+</project>
+EOF
+
+# fix non ASCII chars
 native2ascii -encoding UTF8 %{core}/src/main/java/org/abego/treelayout/package-info.java \
  %{core}/src/main/java/org/abego/treelayout/package-info.java
 
@@ -57,17 +74,20 @@ native2ascii -encoding UTF8 %{core}/src/main/java/org/abego/treelayout/package-i
 %mvn_install
 
 %files -f .mfiles-%{core}.core
-%doc CHANGES.txt
-%license LICENSE.TXT
+%doc %{core}/CHANGES.txt README.md
+%license %{core}/src/LICENSE.TXT
 
 %files demo -f .mfiles-%{core}.demo
 %doc %{core}.demo/CHANGES.txt
 %license %{core}.demo/src/LICENSE.TXT
 
 %files javadoc -f .mfiles-javadoc
-%license LICENSE.TXT
+%license %{core}/src/LICENSE.TXT
 
 %changelog
+* Wed Oct 21 2015 gil cattaneo <puntogil@libero.it> 1.0.3-1
+- update to 1.0.3
+
 * Wed Oct 21 2015 gil cattaneo <puntogil@libero.it> 1.0.2-3
 - use upstream source archive
 - remove duplicate file
