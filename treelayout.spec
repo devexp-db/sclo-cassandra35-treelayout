@@ -1,7 +1,7 @@
 %global core org.abego.treelayout
 Name:          treelayout
 Version:       1.0.3
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Efficient and customizable Tree Layout Algorithm in Java
 License:       BSD
 URL:           http://treelayout.sourceforge.net/
@@ -85,6 +85,9 @@ native2ascii -encoding UTF8 %{core}/src/main/java/org/abego/treelayout/package-i
 %license %{core}/src/LICENSE.TXT
 
 %changelog
+* Fri Feb 05 2016 Fedora Release Engineering <releng@fedoraproject.org> - 1.0.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
 * Wed Oct 21 2015 gil cattaneo <puntogil@libero.it> 1.0.3-1
 - update to 1.0.3
 
