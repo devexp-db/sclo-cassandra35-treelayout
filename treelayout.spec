@@ -1,18 +1,23 @@
+%{?scl:%scl_package treelayout}
+%{!?scl:%global pkg_name %{name}}
+
 %global core org.abego.treelayout
-Name:          treelayout
-Version:       1.0.3
-Release:       3%{?dist}
-Summary:       Efficient and customizable Tree Layout Algorithm in Java
-License:       BSD
-URL:           http://treelayout.sourceforge.net/
-Source0:       https://github.com/abego/treelayout/archive/v%{version}.tar.gz
 
-BuildRequires: maven-local
-BuildRequires: mvn(junit:junit)
-BuildRequires: mvn(org.apache.felix:maven-bundle-plugin)
-BuildRequires: mvn(org.sonatype.oss:oss-parent:pom:)
+Name:		%{?scl_prefix}treelayout
+Version:	1.0.3
+Release:	4%{?dist}
+Summary:	Efficient and customizable Tree Layout Algorithm in Java
+License:	BSD
+URL:		http://treelayout.sourceforge.net/
+Source0:	https://github.com/abego/%{pkg_name}/archive/v%{version}.tar.gz
 
-BuildArch:     noarch
+BuildRequires:	%{?scl_prefix_maven}maven-local
+BuildRequires:	%{?scl_prefix_maven}maven-plugin-bundle
+BuildRequires:	%{?scl_prefix_maven}sonatype-oss-parent
+BuildRequires:	%{?scl_prefix_java_common}junit
+%{?scl:Requires: %scl_runtime}
+
+BuildArch:	noarch
 
 %description
 Efficiently create compact, highly customizable
@@ -21,19 +26,19 @@ in linear time. I.e. even trees with many nodes
 are built fast.
 
 %package demo
-Summary:       TreeLayout Core Demo
+Summary:	TreeLayout Core Demo
 
 %description demo
 Demo for "org.abego.treelayout.core".
 
 %package javadoc
-Summary:       Javadoc for %{name}
+Summary:	Javadoc for %{name}
 
 %description javadoc
 This package contains javadoc for %{name}.
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q -n %{pkg_name}-%{version}
 
 # This is a dummy POM added just to ease building in the RPM platforms:
 cat > pom.xml << EOF
@@ -64,14 +69,19 @@ EOF
 native2ascii -encoding UTF8 %{core}/src/main/java/org/abego/treelayout/package-info.java \
  %{core}/src/main/java/org/abego/treelayout/package-info.java
 
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_package :%{core}.project __noinstall
+%{?scl:EOF}
 
 %build
-
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_build -s
+%{?scl:EOF}
 
 %install
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_install
+%{?scl:EOF}
 
 %files -f .mfiles-%{core}.core
 %doc %{core}/CHANGES.txt README.md
@@ -85,6 +95,9 @@ native2ascii -encoding UTF8 %{core}/src/main/java/org/abego/treelayout/package-i
 %license %{core}/src/LICENSE.TXT
 
 %changelog
+* Thu Dec 08 2016 Tomas Repik <trepik@redhat.com> - 1.0.3-4
+- scl conversion
+
 * Wed Jun 22 2016 gil cattaneo <puntogil@libero.it> 1.0.3-3
 - regenerate build-requires
 
